@@ -9,63 +9,70 @@ new_challenge_number = f"{max(challenge_numbers) + 1:03d}"
 dir_name = f"{new_challenge_number}-{sys.argv[1]}"
 os.makedirs(dir_name)
 os.makedirs(f"{dir_name}/build")
+os.makedirs(f"{dir_name}/test")
+os.makedirs(f"{dir_name}/test/build")
 
 # create files
-with open(f"{dir_name}/{new_challenge_number}.cpp", "x") as f:
-    f.write(f"#include \"{new_challenge_number}.hpp\"")
+with open(f"{dir_name}/{sys.argv[1]}.cpp", "x") as f:
+    f.write(f"#include \"{sys.argv[1]}.hpp\"")
 
-open(f"{dir_name}/{new_challenge_number}.hpp", "x")
+open(f"{dir_name}/{sys.argv[1]}.hpp", "x")
 
-with open(f"{dir_name}/{new_challenge_number}_test.cpp", "x") as f:
+with open(f"{dir_name}/test/{sys.argv[1]}_test.cpp", "x") as f:
     f.write(f"""#include <gtest/gtest.h>
-#include \"{new_challenge_number}.hpp\"
+#include \"../{sys.argv[1]}.hpp\"
 """)
 
 with open(f"{dir_name}/main.cpp", "x") as f:
     f.write(f"""#include <iostream>
-#include \"{new_challenge_number}.hpp\"
+#include \"{sys.argv[1]}.hpp\"
 
 int main() {{
 
 }}
 """)
 
-cmake = f"""cmake_minimum_required(VERSION 3.14)
-project({new_challenge_number}-{sys.argv[1]})
+cmake_main = f"""project({sys.argv[1]})
 
-option(TEST "run google test" OFF)
-
-if(TEST)
-  # GoogleTest requires at least C++14
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-  add_subdirectory(${{PROJECT_BINARY_DIR}}/../../googletest-7c07a863693b0c831f80473f7c6905d7e458682c build)
-
-  enable_testing()
-
-  add_executable(
-    {new_challenge_number}_test
-    {new_challenge_number}_test.cpp
-    {new_challenge_number}.cpp
-  )
-  target_link_libraries(
-    {new_challenge_number}_test
-    GTest::gtest_main
-  )
-
-  include(GoogleTest)
-  gtest_discover_tests({new_challenge_number}_test)
-else()
-  add_executable(
-    {new_challenge_number}
-    {new_challenge_number}.cpp
-    main.cpp
-  )
-endif()"""
+add_executable(
+  {sys.argv[1]}
+  {sys.argv[1]}.cpp
+  main.cpp
+)
+"""
 
 with open(f"{dir_name}/CMakeLists.txt", "x") as f:
-    f.write(cmake)
+    f.write(cmake_main)
+
+cmake_test = f"""cmake_minimum_required(VERSION 3.14)
+project({sys.argv[1]}_test)
+
+# GoogleTest requires at least C++14
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(${{PROJECT_BINARY_DIR}}/../../../googletest-7c07a863693b0c831f80473f7c6905d7e458682c build)
+
+enable_testing()
+
+add_executable(
+  {sys.argv[1]}_test
+  {sys.argv[1]}_test.cpp
+  ../{sys.argv[1]}.cpp
+)
+
+target_link_libraries(
+  {sys.argv[1]}_test
+  GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests({sys.argv[1]}_test)
+"""
+
+with open(f"{dir_name}/test/CMakeLists.txt", "x") as f:
+    f.write(cmake_test)
 
 # run cmake to create build files
-subprocess.run([f"cmake", "-B", f"./{dir_name}/build", "-S", f"./{dir_name}"])
+subprocess.run(["cmake", "-B", f"./{dir_name}/build", "-S", f"./{dir_name}"])
+subprocess.run(["cmake", "-B", f"./{dir_name}/test/build", "-S", f"./{dir_name}/test"])
