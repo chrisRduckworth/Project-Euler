@@ -34,6 +34,9 @@ int main() {{
 
 cmake_main = f"""project({sys.argv[1]})
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 add_executable(
   {sys.argv[1]}
   {sys.argv[1]}.cpp
@@ -48,8 +51,8 @@ cmake_test = f"""cmake_minimum_required(VERSION 3.14)
 project({sys.argv[1]}_test)
 
 # GoogleTest requires at least C++14
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED 20)
 
 add_subdirectory(${{PROJECT_BINARY_DIR}}/../../../googletest-7c07a863693b0c831f80473f7c6905d7e458682c build)
 
