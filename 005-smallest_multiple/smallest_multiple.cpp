@@ -1,0 +1,1 @@
+#include "smallest_multiple.hpp"
