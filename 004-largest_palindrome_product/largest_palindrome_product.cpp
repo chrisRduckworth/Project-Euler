@@ -20,5 +20,27 @@ bool IsPalindrome(int n) {
 int LargestPalindromeProduct(int x, int y) {
   // returns the largest palindrome which is a product of two numbers
   // n, m such that x <= n,m < y
-  return 1;
+
+  int largest_palindrome = 0;
+
+  // this is O((y-x)^2) which isn't very efficient
+  // but since in the question y - x = 900 it doesnt
+  // really matter
+
+  for (int i = x; i < y; i++) {
+
+    for (int j = i; j < y; j++) {
+
+      int product = i * j;
+
+      if (IsPalindrome(product) && 
+          product > largest_palindrome) {
+
+        largest_palindrome = product;
+
+      }
+    }
+  }
+
+  return largest_palindrome;
 }
