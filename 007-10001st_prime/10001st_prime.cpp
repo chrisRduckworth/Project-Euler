@@ -11,3 +11,23 @@ bool IsPrime(int n) {
   return true;
 }
 
+int NthPrime(int n) {
+  //returns the nth prime
+  
+  int prime = 0;
+  int prime_count = 0;
+
+  int i = 2;
+
+  while (prime_count < n) {
+
+    if (IsPrime(i)) {
+      prime = i;
+      prime_count ++;
+    }
+
+    i++;
+  }
+
+  return prime;
+}
