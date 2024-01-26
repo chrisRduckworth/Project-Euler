@@ -1,3 +1,3 @@
 #include <string>
 
-int LargestProduct(std::string n, int m);
+long int LargestProduct(std::string n, int m);
